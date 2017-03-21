@@ -31,7 +31,7 @@ This provides a Writeup / README that includes all the rubric points and how you
 [img1]: ./figure/label_data_num.png "Data Exploration"
 [img2]: ./figure/sample_color2gray.png "Sample data of color conversion"
 [img3]: ./figure/confusion_matrix_before.png "Confusion Matrix"
-[img4]: ./figure/sample_webdata.png "new sample of german signals"
+[img4]: ./figure/sample_webdata2.png "new sample of german signals"
 [img5]: ./figure/feature_map.png "Sample of Feature Map"
 [img6]: ./figure/softmax_example.png "example of softmax function"
 
@@ -233,25 +233,62 @@ If the accuracy between validation and test set is big, this could be caused by 
 
 #### 1. Working on new data from web.
 
-Here are five German traffic signs that I found on the web:
+**(Fixed here for resubmission, as I understood the intention of this exercise...)**
+
+Here are five traffic signs from not only germany but also countries such as Japan or China.
+They are found found on the web and cropped from original images.
 
 ![alt text][img4]
 
-The size is 80x80, so resizing it is necessary.
+The size is randome, so resizing them is necessary.
 
 (The **eighth** code cell of the IPython notebook contains this code.)
 
 
 #### 2.Evaluation to web data
 
-The sample data(8 data) is 1.000 accuracy, while test data accuracy is 0.919.
-Because the sample is small, we may not be able to conclude that this model also works for data found on web.
-However, the prediction model performs well.
+**(Fixed here for resubmission, as I understood the intention of this exercise...)**
 
-Identify where in your code predictions were made.
+The sample data(5 data) is 0.200 accuracy, while test data accuracy is 0.919.
 
-The prediction result is [ 4 25 12 34  3 13 35 14 17], which corrensponds to 
-['Speed limit (70km/h)', 'Road work', 'Priority road', 'Turn left ahead', 'Speed limit (60km/h)', 'Yield', 'Ahead only', 'Stop', 'No entry'], respectively.
+Why this happened? Ther are several reasons why this did not work.
+
+* Unknown sign
+
+Some of the signs are non-germany. This means model created by German dataset can not classify them. Every country has different signs, so we need to collect dataset to accurately classify the signs.
+For example, speed limit 40 is not included in the german dataset.
+The first one is stop sign, but obviously the shape itself is different from germany version.
+
+* Similar sign
+
+The third one should mean 'share one road for both direction'.
+This is somewhat similar to 'Road narrows on the right' in germany dataset.
+Thus, it goes to the Road narrows on the right with high probability.
+
+* Angle of the sign
+As the fourth image shows, some of the sign might be rotated by yaw / roll angle.
+This affects the accuracy.
+When we do apply data augmentation, we need to consider this two different type of the rotation.
+(usually, the library, e.g., tflearn, provides only roll angle.)
+
+* Image is too vague / jittered
+
+The first sign says 'stop' in Japanese though, we human may not be able to read it without the knowledge. same for the number. if the image is too vague, model misclassify them.
+
+* Background Objects
+
+If there is something in background, model may capture that features too. This may cause misclassification
+
+The prediction result is [7  3 24  5 33], which corrensponds to 
+['Speed limit (100km/h)', 'Speed limit (60km/h)', 'Road narrows on the right', 'Speed limit (80km/h)', 'Turn right ahead'], respectively.
+
+The true label should be
+y_web_name = ['Stop',
+              'Speed limit (40km/h)', 
+              'No Label in Germany Data', 
+              'Speed limit (40km/h)', 
+              'Turn right ahead']
+
 
 (The **ninth and tenth** code cell of the IPython notebook contains this code.)
 
